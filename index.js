@@ -13,26 +13,26 @@ const squadData = async () => {
   teams.map((team) => {
     teamIdArr.push(team.id)
   })
-  
-  const teamPlayersResponse = await axios.get(`https://soccer.sportmonks.com/api/v2.0/teams/${teamIdArr[0]}${apiToken}&include=squad.player`)
 
-  // const squad = response.data.data.squad.data
+  for(let i = 0; i < teamIdArr.length; i++) {
+    const teamPlayersResponse = await axios.get(`https://soccer.sportmonks.com/api/v2.0/teams/${teamIdArr[i]}${apiToken}&include=squad.player`)
 
-  // for(let i = 0; i < squad.length; i++) {
-  //   const newP = document.createElement('p')
+    const currentTeam = teamPlayersResponse.data.data
 
-  //   newP.textContent = squad[i].player.data.display_name
+    console.log(currentTeam)
 
-  //   document.body.append(newP)
-  // }
-
-  // squad.map((player) => {
-  //   const newP = document.createElement('p')
-
-  //   newP.innerText = player.player.data.display_name
-
-  //   document.body.append(newP)
-  // })
+    const newH1 = document.createElement('h1')
+    
+    newH1.textContent = teamPlayersResponse.data.data.name
+    
+    document.body.append(newH1)
+    
+    for(let x = 0; x < currentTeam.squad.data.length; x++) {
+      const newP = document.createElement('p')
+      newP.textContent = currentTeam.squad.data[x].player.data.display_name
+      document.body.append(newP)
+    }
+  }
 
   console.log(teamIdResponse)
 
