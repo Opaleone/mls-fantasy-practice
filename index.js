@@ -1,7 +1,6 @@
 const squadButton = document.querySelector('#fetch-button')
 
 const squadData = async () => {
-  const apiToken = '?api_token=75KeS8f6rQcokyxsLBRdsXkuMgIOVoYJrKZFLMkmIs3kj1dgsktz826ebTpm'
   const seasonId = 20901
   const teamIdResponse = await axios.get(`https://soccer.sportmonks.com/api/v2.0/teams/season/${seasonId}${apiToken}`)
 
