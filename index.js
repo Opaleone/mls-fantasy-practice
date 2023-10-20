@@ -1,41 +1,62 @@
-const squadButton = document.querySelector('#fetch-button')
+const squadButton = document.querySelector('#fetch-button');
 
 const squadData = async () => {
-  const seasonId = 20901
-  const teamIdResponse = await axios.get(`https://soccer.sportmonks.com/api/v2.0/teams/season/${seasonId}${apiToken}`)
-
-  
-  const teams = teamIdResponse.data.data
-  
-  const teamIdArr = []
-  
-  teams.map((team) => {
-    teamIdArr.push(team.id)
-  })
-
-  for(let i = 0; i < teamIdArr.length; i++) {
-    const teamPlayersResponse = await axios.get(`https://soccer.sportmonks.com/api/v2.0/teams/${teamIdArr[i]}${apiToken}&include=squad.player`)
-
-    const currentTeam = teamPlayersResponse.data.data
-
-    console.log(currentTeam)
-
-    const newH1 = document.createElement('h1')
-    
-    newH1.textContent = teamPlayersResponse.data.data.name
-    
-    document.body.append(newH1)
-    
-    for(let x = 0; x < currentTeam.squad.data.length; x++) {
-      const newP = document.createElement('p')
-      newP.textContent = currentTeam.squad.data[x].player.data.display_name
-      document.body.append(newP)
+  let mlsId;
+  const seasonId = 2023
+  const leagueUrl = 'https://api-football-v1.p.rapidapi.com/v3/leagues';
+  const options = {
+    method: 'GET',
+    headers: {
+      'X-RapidAPI-Key': apiToken,
+      'X-RapidAPI-Host': 'api-football-v1.p.rapidapi.com'
     }
+  };
+
+  try {
+    const leagueResp = await fetch(leagueUrl, options);
+    const leagueResult = await leagueResp.json();
+    const leagueInfo = leagueResult.response; 
+
+    for (let i = 0; i < leagueInfo.length; i++) {
+      let cur = leagueInfo[i];
+      if (cur.country.name === "USA" && cur.league.name === 'Major League Soccer') {
+        // console.log(cur);
+        mlsId = cur.league.id;
+      }
+    }
+
+    const teamsUrl = `https://api-football-v1.p.rapidapi.com/v3/teams?league=${mlsId}&season=${seasonId}`;
+    const teams = await fetch(teamsUrl, options);
+    const teamResult = await teams.json();
+    const teamInfo = await teamResult.response;
+    const teamIds = [];
+  
+    for (let i = 0; i < teamInfo.length; i++) {
+      teamIds.push(teamInfo[i].team.id);
+    }
+
+    const playersStats = [];
+
+    for (let i = 0; i < 1; i++) {
+      const playersUrl = `https://api-football-v1.p.rapidapi.com/v3/players?team=${teamIds[i]}&season=${seasonId}`;
+      const players = await fetch(playersUrl, options);
+      const playersResult = await players.json();
+      const playerInfo = await playersResult.response;
+
+      // for (let i = 0; i < playerInfo.length; i++) {
+
+      // }
+
+    }
+
+    // console.log(leagueInfo);
+    // console.log(`USA - ${mlsId}`);
+    // console.log(teamInfo);
+    // console.log(`Team ID's - ${teamIds}`);
+    console.log(`Players - ${playersStats[0].player}`);
+    } catch (e) {
+    console.error(e);
   }
-
-  console.log(teamIdResponse)
-
-  console.log(teamPlayersResponse)
 }
 
 squadButton.addEventListener('click', squadData)
