@@ -20,7 +20,6 @@ const squadData = async () => {
     for (let i = 0; i < leagueInfo.length; i++) {
       let cur = leagueInfo[i];
       if (cur.country.name === "USA" && cur.league.name === 'Major League Soccer') {
-        // console.log(cur);
         mlsId = cur.league.id;
       }
     }
@@ -36,24 +35,39 @@ const squadData = async () => {
     }
 
     const playersStats = [];
+    let page = 1;
 
-    for (let i = 0; i < 1; i++) {
-      const playersUrl = `https://api-football-v1.p.rapidapi.com/v3/players?team=${teamIds[i]}&season=${seasonId}`;
+    for (let i = 0; i < teamIds.length; i++) {
+      const playersUrl = `https://api-football-v1.p.rapidapi.com/v3/players?team=${teamIds[0]}&season=${seasonId}&page=${page}`;
       const players = await fetch(playersUrl, options);
       const playersResult = await players.json();
       const playerInfo = await playersResult.response;
 
-      // for (let i = 0; i < playerInfo.length; i++) {
+      console.log(playersResult);
 
-      // }
+      if (page < playersResult.paging.total) {
+        page++;
+        i--;
+      } else if (playersResult.paging.current === playersResult.paging.total) page = 1;
 
+      console.log(page);
+
+      for (let j = 0; j < playerInfo.length; j++) {
+        const playerObject = {
+          name: [playerInfo[j].player.firstname, playerInfo[j].player.lastname],
+          playerInfo: playerInfo[j].player,
+          playerStats: playerInfo[j].statistics[0]
+        }
+
+        playersStats.push(playerObject);
+      }
     }
 
-    // console.log(leagueInfo);
-    // console.log(`USA - ${mlsId}`);
-    // console.log(teamInfo);
-    // console.log(`Team ID's - ${teamIds}`);
-    console.log(`Players - ${playersStats[0].player}`);
+    console.log(leagueInfo);
+    console.log('USA - ' + mlsId);
+    console.log(teamInfo);
+    console.log('Team ID\'s -' + teamIds);
+    console.log(playersStats);
     } catch (e) {
     console.error(e);
   }
