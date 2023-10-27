@@ -1,27 +1,4 @@
 const squadButton = document.querySelector('#fetch-button');
-const apiToken = '6a563d7cf3msh4c701a8a48ee5fcp122fa8jsne2418614c152';
-
-
-/*
-
-DEMO DATA
-
-{
-  "firstName": "Alex",
-  "lastName": "Ring",
-  "displayName": "A. Ring",
-  "number": "9",
-  "age": "32",
-  "img": "https://b.fssta.com/uploads/application/soccer/headshots/23292.png",
-  "nationality": "Finland",
-  "team": "Austin FC",
-  "height": "1.78m",
-  "weight": "98kg",
-  "injured": "false",
-  "position": "Midfielder"
-}
-
-*/
 
 const squadData = async () => {
   let mlsId = 253;
@@ -48,7 +25,7 @@ const squadData = async () => {
     const playersStats = [];
     let page = 1;
 
-    for (let i = 0; i < 1; i++) {
+    for (let i = 0; i < teamIds.length; i++) {
       // Trying to grab player positions and numbers
       const squadUrl = `https://api-football-v1.p.rapidapi.com/v3/players/squads?team=${teamIds[i]}`;
       const squad = await fetch(squadUrl, options);
@@ -61,7 +38,9 @@ const squadData = async () => {
       }
     }
 
-    for (let i = 0; i < 1; i++) {
+    let totalPlayerInfo = [];
+
+    for (let i = 0; i < teamIds.length; i++) {
       const playersUrl = `https://api-football-v1.p.rapidapi.com/v3/players?team=${teamIds[0]}&season=${seasonId}&page=${page}`;
       const players = await fetch(playersUrl, options);
       const playersResult = await players.json();
@@ -71,42 +50,49 @@ const squadData = async () => {
         page++;
         i--;
       } else if (playersResult.paging.current === playersResult.paging.total) page = 1;
-    
-
-      console.log(playerInfo);
-
-      playerInfo.sort((a,b) => a.player.id - b.player.id);
-      console.log(playerInfo);
-
-      let idx = 0;
 
       for (let j = 0; j < playerInfo.length; j++) {
-        const playerData = playerInfo[j].player;
-        const playerStat = playerInfo[j].statistics;
-        console.log(playerData.id);
-        console.log(playersStats[idx].id);
+        totalPlayerInfo.push(playerInfo[j]);
+      }
 
-        console.log(playersStats[j]);
+      totalPlayerInfo.sort((a,b) => a.player.id - b.player.id);
+    }
 
-        if (playerData.id === playersStats[idx].id) {
-          playersStats[j].firstName = playerData.firstname;
-          playersStats[j].lastName = playerData.lastname;
-          playersStats[j].nationality = playerData.nationality;
-          playersStats[j].team = playerStat[0].team.name;
-          playersStats[j].height = playerData.height;
-          playersStats[j].weight = playerData.weight;
-          playersStats[j].injured = playerData.injured;
-        } else {
-          j--;
-        }
-        idx++;
+    /*
+
+    DEMO DATA
+
+    {
+      "firstName": "Alex",
+      "lastName": "Ring",
+      "nationality": "Finland",
+      "team": "Austin FC",
+      "height": "1.78m",
+      "weight": "98kg",
+      "injured": "false",
+    }
+
+    */
+
+    for (let i = 0, j = 0; i < playersStats.length; i++, j++) {
+      const objectInsertion = playersStats[i]
+      const curPlayerInfo = totalPlayerInfo[j].player;
+      const curPlayerStats = totalPlayerInfo[j].statistics[0];
+      // console.log(playersStats[i].id)
+      if (playersStats[i].id === totalPlayerInfo[j].player.id) {
+        objectInsertion.firstName = curPlayerInfo.firstname;
+        objectInsertion.lastName = curPlayerInfo.lastname;
+        objectInsertion.nationality = curPlayerInfo.nationality;
+        objectInsertion.team = curPlayerStats.team.name;
+        objectInsertion.height = curPlayerInfo.height;
+        objectInsertion.weight = curPlayerInfo.weight;
+        objectInsertion.injured = curPlayerInfo.injured;
+      } else {
+        i--;
       }
     }
 
-    // console.log(leagueInfo);
-    // console.log('USA - ' + mlsId);
-    // console.log(teamInfo);
-    // console.log('Team ID\'s -' + teamIds);
+    // console.log(totalPlayerInfo);
     console.log(playersStats);
     } catch (e) {
     console.error(e);
