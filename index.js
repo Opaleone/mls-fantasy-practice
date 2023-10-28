@@ -31,7 +31,6 @@ const squadData = async () => {
       const squad = await fetch(squadUrl, options);
       const squadResult = await squad.json();
       const squadRes = squadResult.response[0];
-      squadRes.players.sort((a,b) => a.id - b.id);
 
       for (let j = 0; j < squadRes.players.length; j++) {
         playersStats.push(squadRes.players[j]);
@@ -41,7 +40,7 @@ const squadData = async () => {
     let totalPlayerInfo = [];
 
     for (let i = 0; i < teamIds.length; i++) {
-      const playersUrl = `https://api-football-v1.p.rapidapi.com/v3/players?team=${teamIds[0]}&season=${seasonId}&page=${page}`;
+      const playersUrl = `https://api-football-v1.p.rapidapi.com/v3/players?team=${teamIds[i]}&season=${seasonId}&page=${page}`;
       const players = await fetch(playersUrl, options);
       const playersResult = await players.json();
       const playerInfo = await playersResult.response;
@@ -54,32 +53,16 @@ const squadData = async () => {
       for (let j = 0; j < playerInfo.length; j++) {
         totalPlayerInfo.push(playerInfo[j]);
       }
-
-      totalPlayerInfo.sort((a,b) => a.player.id - b.player.id);
     }
 
-    /*
-
-    DEMO DATA
-
-    {
-      "firstName": "Alex",
-      "lastName": "Ring",
-      "nationality": "Finland",
-      "team": "Austin FC",
-      "height": "1.78m",
-      "weight": "98kg",
-      "injured": "false",
-    }
-
-    */
+    playersStats.sort((a,b) => a.id - b.id);
+    totalPlayerInfo.sort((a,b) => a.player.id - b.player.id);
 
     for (let i = 0, j = 0; i < playersStats.length; i++, j++) {
       const objectInsertion = playersStats[i]
       const curPlayerInfo = totalPlayerInfo[j].player;
       const curPlayerStats = totalPlayerInfo[j].statistics[0];
-      // console.log(playersStats[i].id)
-      if (playersStats[i].id === totalPlayerInfo[j].player.id) {
+      if (objectInsertion.id === curPlayerInfo.id) {
         objectInsertion.firstName = curPlayerInfo.firstname;
         objectInsertion.lastName = curPlayerInfo.lastname;
         objectInsertion.nationality = curPlayerInfo.nationality;
@@ -92,7 +75,6 @@ const squadData = async () => {
       }
     }
 
-    // console.log(totalPlayerInfo);
     console.log(playersStats);
     } catch (e) {
     console.error(e);
