@@ -1,4 +1,5 @@
 const squadButton = document.querySelector('#fetch-button');
+const apiToken = "6a563d7cf3msh4c701a8a48ee5fcp122fa8jsne2418614c152"
 
 const squadData = async () => {
   let mlsId = 253;
@@ -57,8 +58,12 @@ const squadData = async () => {
 
     playersStats.sort((a,b) => a.id - b.id);
     totalPlayerInfo.sort((a,b) => a.player.id - b.player.id);
+    console.log(playersStats)
+    console.log(totalPlayerInfo)
 
     for (let i = 0, j = 0; i < playersStats.length; i++, j++) {
+      console.log(`i: ${i}`);
+      console.log(`j: ${j}`);
       const objectInsertion = playersStats[i]
       const curPlayerInfo = totalPlayerInfo[j].player;
       const curPlayerStats = totalPlayerInfo[j].statistics[0];
